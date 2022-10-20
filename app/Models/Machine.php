@@ -8,4 +8,9 @@ use Illuminate\Database\Eloquent\Model;
 class Machine extends Model
 {
     use HasFactory;
+
+    function punches()
+    {
+        return $this->belongsToMany(Punch::class);
+    }
 }
