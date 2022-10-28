@@ -11,6 +11,10 @@
 <body>
 <x-header>
 </x-header>
-    
+
+<div class = "container section">
+    @yield('main')
+</div>
+
 </body>
 </html>

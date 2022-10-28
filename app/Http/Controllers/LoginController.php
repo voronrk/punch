@@ -9,10 +9,6 @@ use App\Models\User;
 
 class LoginController extends Controller
 {
-    public function test(Request $request) {
-        dd($request->user());
-    }
-
     public function authenticate(Request $request)
     {
         
