@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests\StorePunchRequest;
+use App\Http\Requests\PunchRequest;
 use Illuminate\Support\Facades\Storage;
 use App\Models\Punch;
 use App\Models\Pic;
@@ -14,62 +14,50 @@ use App\Models\Machine;
 class PunchController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Return the list of punches (.list method)
      *
      * @return \Illuminate\Http\Response
      */
-    // public function index(Request $request)
     public function index()
     {
         return Punch::with(['pics','products','materials','machines'])->get();
-        // $filter = $request->filter;
-        // if ($filter) {
-        //     return [$filter, Punch::with(['pics','products','materials','machines'])->where($filter)->get()];
-        // } else {
-        //     return [$filter, Punch::with(['pics','products','materials','machines'])->get()];
-        // }        
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Create new punch (.add method)
      *
+     * @param  App\Http\Requests\PunchRequest  $request
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function store(PunchRequest $request)
     {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(StorePunchRequest $request)
-    {
-
         $validatedRequest = $request->validated();
 
         $punch = Punch::create([
-            'name' => $validatedRequest['title'],
-            'ordernum' => $request->input('ordernum'),
-            'year' => $request->input('year'),
+            'name' => $validatedRequest['name'],
+            'ordernum' => $validatedRequest['ordernum'],
+            'year' => $validatedRequest['year'],
             'size_length' => $validatedRequest['size-length'],
             'size_width' => $validatedRequest['size-width'],
-            'size_height' => $request->input('size-height'),
-            'knife_size_length' => $request->input('knife-size-length'),
-            'knife_size_width' => $request->input('knife-size-width'),
+            'size_height' => $validatedRequest['size-height'],
+            'knife_size_length' => $validatedRequest['knife-size-length'],
+            'knife_size_width' => $validatedRequest['knife-size-width'],
         ]);
 
-        $products = Product::find($request->products);
-        $punch->products()->attach($products);
+        $products = Product::find($validatedRequest['products']);
+        if ($products) {
+            $punch->products()->attach($products);
+        };
 
-        $materials = Material::find($request->materials);
-        $punch->materials()->attach($materials);
+        $materials = Material::find($validatedRequest['materials']);
+        if ($materials) {
+            $punch->materials()->attach($materials);
+        };
 
-        $machines = Machine::find($request->machines);
-        $punch->machines()->attach($machines);
+        $machines = Machine::find($validatedRequest['machines']);
+        if ($machines) {
+            $punch->machines()->attach($machines);
+        };
 
         foreach($request->pics as $pic) {
             $file = $pic;
@@ -79,53 +67,51 @@ class PunchController extends Controller
                 'value' => $path
             ]);
         };
-
-        return redirect('/create');
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Request $request)
-    {
-        return Punch::with(['pics','products','materials','machines'])->where('id', $request->id)->get();
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Request $request)
-    {
-        Punch::with(['pics','products','materials','machines'])->where('id', $request->id)->delete();
         return redirect('/');
+    }
+
+    /**
+     * Return one punch by id (.get method)
+     *
+     * @param  App\Http\Requests\PunchRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function show(PunchRequest $request)
+    {
+        $data = $request->validated();
+        return Punch::with(['pics','products','materials','machines'])->where('id', $data['id'])->get();
+    }
+
+    /**
+     * Update punch (.update method)
+     *
+     * @param  App\Http\Requests\PunchRequest  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function update(PunchRequest $request)
+    {
+        $data = $request->validated();
+        $id = $data['id'];
+        unset($data['id']);
+        $result = Punch::where('id', $id)->update($data);
+        return ['result' => (bool)$result];
+    }
+
+    /**
+     * Delete punch (.delete method)
+     *
+     * @param App\Http\Requests\PunchRequest
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(PunchRequest $request)
+    {
+        $data = $request->validated();
+        $punch = Punch::find($data['id']);
+        if ($punch) {
+            $result = $punch->delete();
+        } else {
+            return ['result' => (bool)$punch];
+        }
+        return ['result' => (bool)$result];
     }
 }

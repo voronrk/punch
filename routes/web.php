@@ -20,6 +20,10 @@ Route::get('/', function () {
     return view('index');
 })->name('index');
 
+Route::get('/addpunch', function () {
+    return view('addpunch');
+})->name('addpunch');
+
 Route::post('/login', [LoginController::class, 'authenticate'])->name('login');
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 

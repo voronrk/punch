@@ -3,7 +3,7 @@
         <div class="navbar-start">
             <div class="navbar-item">
                 @if ($isAdmin)
-                    <button class="button is-primary has-text-weight-bold">Создать</button>
+                    <a class="button is-primary has-text-weight-bold" href="{{route('addpunch')}}">Создать</a>
                 @endif
             </div>
         </div>

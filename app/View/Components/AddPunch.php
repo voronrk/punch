@@ -3,6 +3,7 @@
 namespace App\View\Components;
 
 use Illuminate\View\Component;
+
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -10,23 +11,27 @@ use Illuminate\Support\Facades\Route;
 
 use Facades\App\Http\Controllers\RoleController;
 
-class header extends Component
+use App\Models\Product;
+use App\Models\Material;
+use App\Models\Machine;
+
+class AddPunch extends Component
 {
 
-    public $userName = '';
-    public $isAdmin = false;
+    public $products;
+    public $materials;
+    public $machines;
 
     /**
      * Create a new component instance.
      *
      * @return void
      */
-    public function __construct(Request $request)
+    public function __construct()
     {
-        if ($request->user()) {
-            $this->userName = $request->user()->name;
-            $this->isAdmin = RoleController::show($request->user()->role_id) == 'admin';
-        }
+        $this->products = Product::all();
+        $this->materials = Material::all();
+        $this->machines = Machine::all();
     }
 
     /**
@@ -36,6 +41,6 @@ class header extends Component
      */
     public function render()
     {
-        return view('components.header', ['userName' => $this->userName, 'isAdmin' => $this->isAdmin]);
+        return view('components.add-punch');
     }
 }
