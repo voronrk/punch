@@ -3,11 +3,16 @@
 namespace App\View\Components;
 
 use Illuminate\View\Component;
-// use App\Models\Punch;
 use Facades\App\Http\Controllers\PunchController;
+use Illuminate\Http\Request;
+use Facades\App\Http\Controllers\RoleController;
+
 
 class CardsWrapper extends Component
 {
+
+    public $userName = '';
+    public $isAdmin = false;
 
     public $punches;
 
@@ -16,10 +21,15 @@ class CardsWrapper extends Component
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Request $request)
     {
         // $this->punches = Punch::with('products', 'machines', 'materials', 'pics')->get();
         $this->punches = PunchController::index();
+
+        if ($request->user()) {
+            $this->userName = $request->user()->name;
+            $this->isAdmin = RoleController::show($request->user()->role_id) == 'admin';
+        }
     }
 
     /**

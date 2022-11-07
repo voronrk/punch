@@ -22,13 +22,17 @@ class PunchCard extends Component
     public $knifeSizeWidth;
     public $pics;
 
+    public $isAdmin;
+
     /**
      * Undocumented function
      *
      * @param Punch $punch
      */
-    public function __construct(Punch $punch)
+    public function __construct(Punch $punch, bool $isAdmin)
     {
+        $this->isAdmin = $isAdmin;
+
         $this->name = $punch->name;
         $this->orderNum = $punch->ordernum;
         $this->year = $punch->year;

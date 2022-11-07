@@ -33,6 +33,8 @@
         </div>
     </div>
     <div class="media-right">
-        <button class="button is-small">Редактировать</button>
+        @if($isAdmin)
+            <button class="button is-small">Редактировать</button>
+        @endIf
     </div>
 </div>
